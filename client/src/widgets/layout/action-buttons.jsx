@@ -10,7 +10,6 @@ export const ActionButtons = ({ onCreate }) => {
       >
         Create order
       </Button>
-
     </div>
   );
 };

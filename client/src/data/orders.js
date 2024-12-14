@@ -35,6 +35,24 @@ class OrderManager {
       console.error("Error updating order:", error);
     }
   }
+
+  createOrder = async (order) => {
+    try {
+      const response = await instance.post('/orders', order);
+      this.order = response.data;
+      return this.order;
+    } catch (error) {
+      console.error("Error creating order:", error);
+    }
+  }
+  deleteOrder = async (id) => {
+    try {
+      await instance.delete(`/orders/${id}`);
+      this.order = null;
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    }
+  }
 }
 const orderManager = new OrderManager();
 export { orderManager };

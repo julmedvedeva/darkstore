@@ -53,7 +53,8 @@ class OrderController {
       const newOrder = await orderModel.createOrder(order);
       const newOrderWithGoods = [];
       for (const good of order.goods) {
-        const newOrderGoods = await orderGoodsModel.create({ orderid: newOrder.orderid, goodid: good.goodid, goodName: good.goodname, quantity: good.quantity, ordersgoodsid: good.ordersgoodsid });
+        console.log('createOrder:good', good);
+        const newOrderGoods = await orderGoodsModel.create({ orderid: newOrder.orderid, goodid: good.goodid, goodName: good.goodname, quantity: good.quantity });
         newOrderWithGoods.push(newOrderGoods);
       }
       res.status(201).json({ ...newOrder, goods: newOrderWithGoods });

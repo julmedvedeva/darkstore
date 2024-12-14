@@ -18,9 +18,10 @@ class OrderGoodsModel {
 
   async create(order) {
     try {
+      console.log('Creating order:', order);
       const result = await this.db.one(
-        'INSERT INTO ordersgoods (orderid, goodid, quantity) VALUES ($1, $2, $3) RETURNING *',
-        [order.orderid, order.goodid, order.quantity]
+        'INSERT INTO ordersgoods (orderid, goodid, quantity, goodName) VALUES ($1, $2, $3, $4) RETURNING *',
+        [order.orderid, order.goodid, order.quantity, order.goodName]
       );
       return result;
     } catch (err) {
@@ -31,7 +32,6 @@ class OrderGoodsModel {
 
   async update(id, order) {
     try {
-      console.log("Updated data:", { id, order });
       const result = await this.db.one(
         'UPDATE ordersgoods SET goodid = $1, goodName = $2, quantity = $3 WHERE orderid = $4 AND ordersgoodsid = $5 RETURNING *',
         [order.goodid, order.goodName, order.quantity, id, order.ordersgoodsid]

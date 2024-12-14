@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
-export function Orders() {
+export function OrdersPage() {
   const navigate = useNavigate();
   const [colDefs, setColDefs] = useState([]);
   const defaultColDef = useMemo(() => {
@@ -42,12 +42,20 @@ export function Orders() {
         headerName: "Actions",
         cellRenderer: (params) => {
           return (
-            <Button
-              onClick={() => handleEdit(params.data.orderid)}
-              className="text-black bg-transparent"
-            >
-              Редактировать
-            </Button>
+            <div>
+              <Button
+                onClick={() => handleEdit(params.data.orderid)}
+                className="text-black bg-transparent"
+              >
+                Edit
+              </Button>
+              <Button
+                onClick={() => handleDelete(params.data.orderid)}
+                className="text-black bg-transparent"
+              >
+                Delete
+              </Button>
+            </div>
           )
         },
       },
@@ -64,6 +72,14 @@ export function Orders() {
 
     // Переходим на новый URL
     navigate(newUrl);
+  };
+  const handleDelete = async (orderId) => {
+    try {
+      await orderManager.deleteOrder(orderId);
+      fetchOrders(currentPage);
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    }
   };
   const fetchOrders = useCallback((page) => {
     orderManager.fetchOrders(page).then(() => {
@@ -107,4 +123,4 @@ export function Orders() {
   );
 }
 
-export default Orders;
+export default OrdersPage;

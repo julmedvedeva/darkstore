@@ -2,8 +2,8 @@ import {
   InformationCircleIcon,
   UserIcon,
 } from "@heroicons/react/24/solid";
-import { Orders, Goods } from "@/pages/dashboard";
-import { EditPage } from "@/pages/dashboard/edit";
+import { Goods, OrdersPage, EditPage, CreatePage } from "@/pages/dashboard";
+
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -19,7 +19,7 @@ export const routes = [
         icon: <UserIcon {...icon} />,
         name: "orders",
         path: "/orders",
-        element: <Orders />,
+        element: <OrdersPage />,
       },
 
       {
@@ -35,6 +35,13 @@ export const routes = [
         name: "edit",
         path: "/orders/:id/edit",
         element: <EditPage />,
+      },
+      {
+        isShow: false,
+        icon: <InformationCircleIcon {...icon} />,
+        name: "create",
+        path: "/orders/create",
+        element: <CreatePage />,
       },
     ],
   },
