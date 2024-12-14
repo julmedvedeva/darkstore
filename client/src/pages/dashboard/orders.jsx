@@ -1,0 +1,110 @@
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { orderManager } from "@/data";
+import { Button } from "@material-tailwind/react";
+import { PaginationGroup, ActionButtons } from "@/widgets/layout";
+import { AgGridReact } from 'ag-grid-react';
+import { ModuleRegistry } from 'ag-grid-community';
+import { ClientSideRowModelModule } from 'ag-grid-community';
+import { useNavigate } from "react-router-dom";
+
+ModuleRegistry.registerModules([ClientSideRowModelModule]);
+
+export function Orders() {
+  const navigate = useNavigate();
+  const [colDefs, setColDefs] = useState([]);
+  const defaultColDef = useMemo(() => {
+    return {
+      editable: true,
+      filter: false,
+      flex: 1,
+      minWidth: 100,
+    };
+  }, []);
+  const [orders, setOrders] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    const columnDefs = [
+      { headerName: 'Order ID', field: 'orderid', sortable: false, filter: false },
+      { headerName: 'Total', field: 'totalamount', sortable: false, filter: false },
+      {
+        headerName: 'Goods',
+        field: 'goods',
+        sortable: false,
+        filter: false,
+        valueGetter: (params) => {
+          const goodsArray = params.data.goods || [];
+          return goodsArray.map(good => good.goodname).join(', ');
+        }
+      },
+      {
+        headerName: "Actions",
+        cellRenderer: (params) => {
+          return (
+            <Button
+              onClick={() => handleEdit(params.data.orderid)}
+              className="text-black bg-transparent"
+            >
+              Редактировать
+            </Button>
+          )
+        },
+      },
+    ];
+    setColDefs(columnDefs);
+  }, []);
+  const handleEdit = (id) => {
+
+    // Получаем текущий URL
+    const currentUrl = window.location.pathname; // Например, "/orders"
+
+    // Создаем новый URL
+    const newUrl = `${currentUrl}/${id}/edit`;
+
+    // Переходим на новый URL
+    navigate(newUrl);
+  };
+  const fetchOrders = useCallback((page) => {
+    orderManager.fetchOrders(page).then(() => {
+      setOrders(orderManager.orders);
+      setTotalPages(orderManager.pagination.totalPages);
+    }).catch((err) => {
+      console.log(err);
+    });
+  }, []);
+
+  const navigateTo = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    fetchOrders(page);
+  };
+
+  useEffect(() => {
+    fetchOrders(currentPage);
+  }, [currentPage, fetchOrders]);
+
+  return (
+    <div className="ag-theme-quartz my-10 max-w-screen-lg" style={{ height: 500 }}>
+      <div className="mb-4">
+        <ActionButtons
+          onCreate={() => console.log("Create order")}
+        />
+      </div>
+      <AgGridReact
+        rowData={orders}
+        columnDefs={colDefs}
+        defaultColDef={defaultColDef}
+        pagination={false}
+      />
+      <div className="flex justify-center mt-4">
+        <PaginationGroup
+          navigateTo={navigateTo}
+          totalPages={totalPages}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default Orders;
