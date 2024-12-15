@@ -5,7 +5,7 @@ const router = express.Router();
 const goodController = require('../controllers/good.controller');
 
 router.get('/', goodController.getAllGoods);
-router.get('/:id', [param('id').notEmpty().isInt({ min: 1 })], goodController.getGoodById);
+router.get('/:id', goodController.getGoodById);
 router.post('/', goodController.createGood);
 router.put('/:id', goodController.updateGood);
 router.delete('/:id', goodController.deleteGood);

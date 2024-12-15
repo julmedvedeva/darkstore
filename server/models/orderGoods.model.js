@@ -18,7 +18,6 @@ class OrderGoodsModel {
 
   async create(order) {
     try {
-      console.log('Creating order:', order);
       const result = await this.db.one(
         'INSERT INTO ordersgoods (orderid, goodid, quantity, goodName) VALUES ($1, $2, $3, $4) RETURNING *',
         [order.orderid, order.goodid, order.quantity, order.goodName]

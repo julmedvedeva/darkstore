@@ -1,8 +1,8 @@
 const request = require('supertest');
 const express = require('express');
 const bodyParser = require('body-parser');
-const GoodController = require('../controllers/good.controller'); // Путь к вашему контроллеру
-const goodModel = require('../models/good.model'); // Модель для мокирования
+const GoodController = require('../controllers/good.controller');
+const goodModel = require('../models/good.model');
 const app = express();
 
 app.use(bodyParser.json());
@@ -12,7 +12,6 @@ app.post('/api/goods', GoodController.createGood);
 app.put('/api/goods/:id', GoodController.updateGood);
 app.delete('/api/goods/:id', GoodController.deleteGood);
 
-// Мокирование методов модели goodModel
 jest.mock('../models/good.model');
 
 describe('GoodController', () => {
@@ -48,16 +47,15 @@ describe('GoodController', () => {
 
   it('should get good by id', async () => {
     goodModel.getGoodById.mockResolvedValue(mockGood);
-
-    const response = await request(app).get('/api/goods/1'); // Предполагаем, что товар с ID 1 существует
+    const response = await request(app).get('/api/goods/1');
     expect(response.status).toBe(200);
     expect(response.body).toEqual(mockGood);
   });
 
   it('should return 404 for non-existing good', async () => {
-    goodModel.getGoodById.mockRejectedValue({ code: 0 }); // Эмулируем ошибку "товар не найден"
+    goodModel.getGoodById.mockRejectedValue({ code: 0 });
 
-    const response = await request(app).get('/api/goods/999'); // Предполагаем, что товара с ID 999 нет
+    const response = await request(app).get('/api/goods/999');
     expect(response.status).toBe(404);
     expect(response.text).toBe('Good not found');
   });
@@ -76,7 +74,7 @@ describe('GoodController', () => {
   it('should return validation error for createGood', async () => {
     const response = await request(app)
       .post('/api/goods')
-      .send({ ...mockGood, price: -10 }); // Неверная цена
+      .send({ ...mockGood, price: -10 });
     expect(response.status).toBe(400);
     expect(response.body.errors).toEqual(
       expect.arrayContaining([
@@ -91,7 +89,7 @@ describe('GoodController', () => {
     const updatedGood = { ...mockGood, name: 'Updated Good' };
     goodModel.updateGood.mockResolvedValue(updatedGood);
     const response = await request(app)
-      .put('/api/goods/1') // Предполагаем, что товар с ID 1 существует
+      .put('/api/goods/1')
       .send(updatedGood);
     expect(response.status).toBe(200);
     expect(response.body.name).toBe('Updated Good');
@@ -99,7 +97,7 @@ describe('GoodController', () => {
 
   it('should return validation error for updateGood', async () => {
     const response = await request(app)
-      .put('/api/goods/abc') // Неверный ID
+      .put('/api/goods/abc')
       .send({ name: 'Updated Good' });
 
     expect(response.status).toBe(400);
@@ -115,12 +113,12 @@ describe('GoodController', () => {
   it('should delete a good', async () => {
     goodModel.deleteGood.mockResolvedValue();
 
-    const response = await request(app).delete('/api/goods/1'); // Предполагаем, что товар с ID 1 существует
+    const response = await request(app).delete('/api/goods/1');
     expect(response.status).toBe(204);
   });
 
   it('should return validation error for deleteGood', async () => {
-    const response = await request(app).delete('/api/goods/abc'); // Неверный ID
+    const response = await request(app).delete('/api/goods/abc');
     expect(response.status).toBe(400);
     expect(response.body.errors).toEqual(
       expect.arrayContaining([

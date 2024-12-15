@@ -8,8 +8,8 @@ class OrderController {
   }
 
   async getAllOrders(req, res) {
-    await query('page').optional().isInt({ min: 1 }).toInt();
-    await query('limit').optional().isInt({ min: 1 }).toInt();
+    await query('page').optional().isInt({ min: 1 }).toInt().run(req);
+    await query('limit').optional().isInt({ min: 1 }).toInt().run(req);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -21,10 +21,17 @@ class OrderController {
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
       const orders = await orderModel.getAllOrders(limit, offset);
+      if (!orders.length) {
+        return res.json({ orders: [], pagination: { totalOrders: 0, totalPages: 0, currentPage: page, limit } });
+      }
+
       const totalOrders = await orderModel.getTotalOrdersCount();
       const totalPages = Math.ceil(totalOrders / limit);
 
       for (const order of orders) {
+        if (!order.orderid) {
+          continue;
+        }
         const orderWithGoods = await orderGoodsModel.getOrderById(order.orderid);
         order.goods = orderWithGoods;
       }
@@ -39,13 +46,12 @@ class OrderController {
         },
       });
     } catch (err) {
-      console.error(err);
       res.status(500).send('Server error');
     }
   }
 
   async getOrderById(req, res) {
-    await param('id').isInt();
+    await param('id').isInt().run(req);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -68,17 +74,11 @@ class OrderController {
     await body('totalamount')
       .isFloat({ gt: 0 })
       .withMessage('Total amount must be a number greater than zero')
-      .custom(value => {
-        if (!/^\d+(\.\d{1,2})?$/.test(value)) {
-          throw new Error('Total amount must have at most two decimal places');
-        }
-        return true;
-      });
-    await body('goods').isArray().withMessage('Goods must be an array');
-    await body('goods.*.goodid').isInt().withMessage('Good ID must be an integer');
-    await body('goods.*.goodname').isString().isLength({ max: 255 }).withMessage('Good name must be a string with a maximum length of 255 characters');
-    await body('goods.*.quantity').isInt({ min: 1 }).withMessage('Quantity must be a positive integer');
-
+      .run(req);
+    await body('goods').isArray().withMessage('Goods must be an array').run(req);
+    await body('goods.*.goodid').isInt().withMessage('Good ID must be an integer').run(req);
+    await body('goods.*.goodname').isString().isLength({ max: 255 }).withMessage('Good name must be a string with a maximum length of 255 characters').run(req);
+    await body('goods.*.quantity').isInt({ min: 1 }).withMessage('Quantity must be a positive integer').run(req);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -100,13 +100,12 @@ class OrderController {
   }
 
   async updateOrder(req, res) {
-    // Валидация параметра id и тела запроса
-    await param('id').isInt();
-    await body('totalamount').optional().isNumeric();
-    await body('goods').optional().isArray();
-    await body('goods.*.goodid').optional().isInt();
-    await body('goods.*.goodname').optional().isString().isLength({ max: 255 });
-    await body('goods.*.quantity').optional().isInt({ min: 1 });
+    await param('id').isInt().run(req);
+    await body('totalamount').optional().isNumeric().run(req);
+    await body('goods').optional().isArray().run(req);
+    await body('goods.*.goodid').optional().isInt().run(req);
+    await body('goods.*.goodname').optional().isString().isLength({ max: 255 }).run(req);
+    await body('goods.*.quantity').optional().isInt({ min: 1 }).run(req);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -128,10 +127,8 @@ class OrderController {
       res.status(500).send('Server error');
     }
   }
-
-
   async deleteOrder(req, res) {
-    await param('id').isInt();
+    await param('id').isInt().run(req);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
