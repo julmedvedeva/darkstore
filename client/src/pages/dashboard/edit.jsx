@@ -26,7 +26,6 @@ export function EditPage() {
     });
   }, []);
 
-
   const fetchGoods = useCallback(() => {
     goodsManager.fetchAllGoods().then(() => {
       setGoods(goodsManager.goods);
@@ -46,32 +45,34 @@ export function EditPage() {
   };
 
   if (!order) return <div>Loading...</div>;
+
   return (
-    <div className="my-10 max-w-screen-lg">
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Order ID:</label>
-          <input type="text" value={order.orderid} readOnly className="border rounded p-2" />
+    <div className="my-10 max-w-screen-lg mx-auto p-6 bg-gray-50 shadow-lg rounded-lg">
+      <h1 className="text-2xl font-bold mb-6 text-gray-700">Edit Order</h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex flex-col">
+          <label className="text-gray-600 font-medium mb-2">Order ID:</label>
+          <input type="text" value={order.orderid} readOnly className="border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
-        <div>
-          <label>Total amount:</label>
-          <input type="text" value={order.totalamount} readOnly className="border rounded p-2" />
+        <div className="flex flex-col">
+          <label className="text-gray-600 font-medium mb-2">Total Amount:</label>
+          <input type="text" value={order.totalamount} readOnly className="border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
-        <div>
-          <label>Created At: </label>
-          <input type="text" value={new Date(order.createdat).toLocaleDateString() || "Not specified"} readOnly className="border rounded p-2" />
+        <div className="flex flex-col">
+          <label className="text-gray-600 font-medium mb-2">Created At:</label>
+          <input type="text" value={new Date(order.createdat).toLocaleDateString() || "Not specified"} readOnly className="border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         {order.deletedat && (
-          <div>
-            <label>Deleted At: </label>
-            <input type="text" value={order.deletedat} readOnly className="border rounded p-2" />
+          <div className="flex flex-col">
+            <label className="text-gray-600 font-medium mb-2">Deleted At:</label>
+            <input type="text" value={order.deletedat} readOnly className="border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
         )}
-        <h3>Goods:</h3>
+        <h3 className="text-xl font-semibold text-gray-700">Goods:</h3>
         {goodsOrder?.map((good, index) => (
-          <div key={good.ordersgoodsid} className="mb-4 border p-4">
-            <div className="flex gap-2 mb-2">
-              <label>Select Product:</label>
+          <div key={good.ordersgoodsid} className="mb-4 border border-gray-300 p-4 rounded-lg bg-white shadow-sm">
+            <div className="flex flex-col mb-4">
+              <label className="text-gray-600 font-medium mb-2">Select Product:</label>
               <select
                 value={good.goodname}
                 onChange={(e) => {
@@ -85,7 +86,7 @@ export function EditPage() {
                   newGoods[index].ordersgoodsid = good.ordersgoodsid;
                   setGoodsOrder(newGoods);
                 }}
-                className="border rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Product</option>
                 {goods.map((item) => (
@@ -93,27 +94,33 @@ export function EditPage() {
                 ))}
               </select>
             </div>
-            <div className="flex gap-2">
-              <label>Quantity:</label>
+
+            <div className="flex flex-col mb-4">
+              <label className="text-gray-600 font-medium mb-2">Quantity:</label>
               <input
                 type="number"
                 value={good.quantity}
                 onChange={(e) => {
-                  const selectedGood = goods.find(item => item.name === e.target.value);
-                  console.log("selectedGood", { selectedGood, goods, eTV: e.target.value, goodsOrder });
                   const newUpdatedData = [...updatedData];
-                  newUpdatedData[index] = { ...goodsOrder[index], quantity: +e.target.value, };
+                  newUpdatedData[index] = { ...goodsOrder[index], quantity: +e.target.value };
                   setUpdatedData(newUpdatedData);
                   const newGoods = [...goodsOrder];
                   newGoods[index].quantity = +e.target.value;
                   setGoodsOrder(newGoods);
                 }}
-                className="border rounded p-2"
+                className="border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
         ))}
-        <button type="submit" className="bg-blue-500 text-white rounded p-2">Save Changes</button>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            Save Changes
+          </button>
+        </div>
       </form>
     </div>
   );
