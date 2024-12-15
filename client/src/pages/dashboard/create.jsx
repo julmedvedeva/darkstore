@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { goodsManager, orderManager } from "@/data";
+import { GoodSelector, QuantityInput } from "@/widgets/layout";
 
 export function CreatePage() {
   const navigate = useNavigate();
@@ -49,10 +50,15 @@ export function CreatePage() {
           <label className="text-gray-600 font-medium mb-2">Total Amount:</label>
           <input
             type="number"
+            step={'0.01'}
             value={newOrder.totalamount}
             onChange={(e) => setNewOrder({ ...newOrder, totalamount: +e.target.value })}
-            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${newOrder.totalamount === 0 ? "border-red-500" : ""
+              }`}
           />
+          {newOrder.totalamount <= 0 && (
+            <p className="text-red-500 text-sm">Total amount cannot be zero.</p>
+          )}
         </div>
 
         <h3 className="text-xl font-semibold text-gray-700">Goods:</h3>
@@ -61,48 +67,30 @@ export function CreatePage() {
             key={index}
             className="mb-4 border border-gray-300 p-4 rounded-lg bg-white shadow-sm"
           >
-            <div className="flex flex-col mb-4">
-              <label className="text-gray-600 font-medium mb-2">Select Product:</label>
-              <select
-                value={good.goodname}
-                onChange={(e) => {
-                  const selectedGood = goods.find(
-                    (item) => item.name === e.target.value
-                  );
-                  const newGoodsOrder = [...goodsOrder];
-                  newGoodsOrder[index] = {
-                    goodid: selectedGood.goodid,
-                    quantity: good.quantity,
-                    goodname: selectedGood.name,
-                  };
-                  setGoodsOrder(newGoodsOrder);
-                  setNewOrder({ ...newOrder, goods: newGoodsOrder });
-                }}
-                className="border border-gray-300 rounded-lg p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select Product</option>
-                {goods.map((item) => (
-                  <option key={item.goodid} value={item.name}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-gray-600 font-medium mb-2">Quantity:</label>
-              <input
-                type="number"
-                value={good.quantity}
-                onChange={(e) => {
-                  const newGoodsOrder = [...goodsOrder];
-                  newGoodsOrder[index].quantity = +e.target.value;
-                  setGoodsOrder(newGoodsOrder);
-                  setNewOrder({ ...newOrder, goods: newGoodsOrder });
-                }}
-                className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <GoodSelector
+              goods={goods}
+              selectedGood={good.goodname}
+              onSelectGood={(value) => {
+                const selectedGood = goods.find((item) => item.name === value);
+                const newGoodsOrder = [...goodsOrder];
+                newGoodsOrder[index] = {
+                  goodid: selectedGood.goodid,
+                  quantity: good.quantity,
+                  goodname: selectedGood.name,
+                };
+                setGoodsOrder(newGoodsOrder);
+                setNewOrder({ ...newOrder, goods: newGoodsOrder });
+              }}
+            />
+            <QuantityInput
+              quantity={good.quantity}
+              onChangeQuantity={(value) => {
+                const newGoodsOrder = [...goodsOrder];
+                newGoodsOrder[index].quantity = value;
+                setGoodsOrder(newGoodsOrder);
+                setNewOrder({ ...newOrder, goods: newGoodsOrder });
+              }}
+            />
           </div>
         ))}
 
@@ -117,7 +105,11 @@ export function CreatePage() {
 
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            disabled={!newOrder.goods.length}
+            className={`${!newOrder.goods.length
+              ? "bg-blue-300 text-gray-500 cursor-not-allowed"
+              : "bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              } px-4 py-2 rounded-lg`}
           >
             Create Order
           </button>
