@@ -24,6 +24,10 @@ if [ "$SCHEMA_EXISTS" == "1" ]; then
   PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U postgres -d $DB_NAME -c "DROP SCHEMA public CASCADE;"
 fi
 
+# Удаление всех привилегий на объекты в базе данных для роли darkstoreroot
+PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U postgres -d $DB_NAME -c "REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM $DB_USER;"
+PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U postgres -d $DB_NAME -c "REVOKE ALL PRIVILEGES ON DATABASE $DB_NAME FROM $DB_USER;"
+
 # Удаление всех ролей, принадлежащих пользователю
 PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "DROP OWNED BY $DB_USER CASCADE;"
 
@@ -37,15 +41,6 @@ PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U postgres -d $DB_NAME -c 
 PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "REVOKE ALL PRIVILEGES ON DATABASE $DB_NAME FROM PUBLIC;"
 
 # Удаление базы данных
-echo "Dropping the database $DB_NAME..."
-PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
-
-# Проверка на успешность удаления базы данных
-if [ $? -eq 0 ]; then
-  echo "Database $DB_NAME dropped successfully."
-else
-  echo "Error dropping database $DB_NAME."
-  exit 1
-fi
+PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U postgres -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
 
 echo "All tables, relationships, roles, and data have been deleted from the database."
