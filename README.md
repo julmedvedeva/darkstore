@@ -39,8 +39,7 @@ To get a local copy up and running, follow these steps:
 5. Install DB:
   ```sh
   cd ..
-  chmod +x server/database/init-db.sh
-  chmod +x server/database/init-db-2.sh
+  chmod +x ./init-db.sh
   ./init-db.sh
   ```
 ### Running the Application
@@ -67,3 +66,11 @@ This project is licensed under the MIT and Creative Tim License. See the [LICENS
 - **Styling:** CSS, Tailwind
 - **API:** RESTful API
 - **Version Control:** Git
+
+### After all
+- Remove DB
+  ```sh
+  cd ..
+  chmod +x ./clear-db.sh
+  ./clear-db.sh
+  ```

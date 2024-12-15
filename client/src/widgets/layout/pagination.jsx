@@ -19,7 +19,7 @@ export function PaginationGroup({ navigateTo, totalPages }) {
         <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" />
       </IconButton>
       {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-        <IconButton {...getItemProps(page)}>{page}</IconButton>
+        <IconButton key={page} {...getItemProps(page)}>{page}</IconButton>
       ))}
       <IconButton onClick={() => navigateTo(active + 1)} disabled={active >= totalPages}>
         <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />

@@ -6,13 +6,15 @@ CREATE TABLE goods (
   description VARCHAR(255),
   price NUMERIC(10, 2) NOT NULL,
   stockquantity INTEGER NOT NULL,
-  createdat TIMESTAMP NOT NULL DEFAULT now()
+  createdat TIMESTAMP NOT NULL DEFAULT now(),
+  deletedat TIMESTAMP NULL
 );
 
 CREATE TABLE orders (
   orderid SERIAL PRIMARY KEY,
   totalamount NUMERIC(10, 2) NOT NULL,
-  createdat TIMESTAMP NOT NULL DEFAULT now()
+  createdat TIMESTAMP NOT NULL DEFAULT now(),
+  deletedat TIMESTAMP NULL
 );
 CREATE TABLE ordersgoods (
   ordersgoodsid SERIAL PRIMARY KEY,

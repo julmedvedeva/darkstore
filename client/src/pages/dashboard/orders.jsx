@@ -102,6 +102,7 @@ export function OrdersPage() {
         />
       </div>
       <AgGridReact
+        // key={JSON.stringify(colDefs)}
         rowData={orders}
         columnDefs={colDefs}
         defaultColDef={defaultColDef}
