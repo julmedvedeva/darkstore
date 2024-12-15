@@ -8,7 +8,7 @@ class OrderModel {
 
   async getTotalOrdersCount() {
     try {
-      const result = await this.db.one('SELECT COUNT(*) FROM orders');
+      const result = await this.db.one('SELECT COUNT(*) FROM orders WHERE deletedat IS NULL');
       return parseInt(result.count, 10);
     } catch (err) {
       console.error('Error getting total orders count:', err);

@@ -63,14 +63,8 @@ export function OrdersPage() {
     setColDefs(columnDefs);
   }, []);
   const handleEdit = (id) => {
-
-    // Получаем текущий URL
-    const currentUrl = window.location.pathname; // Например, "/orders"
-
-    // Создаем новый URL
+    const currentUrl = window.location.pathname;
     const newUrl = `${currentUrl}/${id}/edit`;
-
-    // Переходим на новый URL
     navigate(newUrl);
   };
   const handleDelete = async (orderId) => {
