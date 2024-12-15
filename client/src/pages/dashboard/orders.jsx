@@ -104,7 +104,7 @@ export function OrdersPage() {
     <div className="ag-theme-quartz my-10 max-w-screen-lg" style={{ height: 500 }}>
       <div className="mb-4">
         <ActionButtons
-          onCreate={() => console.log("Create order")}
+          onCreate={() => navigate("/dashboard/orders/create")}
         />
       </div>
       <AgGridReact
